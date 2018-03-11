@@ -495,16 +495,7 @@ all_cil_files := \
 $(LOCAL_BUILT_MODULE): PRIVATE_CIL_FILES := $(all_cil_files)
 $(LOCAL_BUILT_MODULE): $(HOST_OUT_EXECUTABLES)/secilc $(HOST_OUT_EXECUTABLES)/sepolicy-analyze $(all_cil_files)
 	@mkdir -p $(dir $@)
-	$(hide) $< -m -M true -G -c $(POLICYVERS) $(PRIVATE_CIL_FILES) -o $@.tmp -f /dev/null
-	$(hide) $(HOST_OUT_EXECUTABLES)/sepolicy-analyze $@.tmp permissive > $@.permissivedomains
-	$(hide) if [ "$(TARGET_BUILD_VARIANT)" = "user" -a -s $@.permissivedomains ]; then \
-		echo "==========" 1>&2; \
-		echo "ERROR: permissive domains not allowed in user builds" 1>&2; \
-		echo "List of invalid domains:" 1>&2; \
-		cat $@.permissivedomains 1>&2; \
-		exit 1; \
-		fi
-	$(hide) mv $@.tmp $@
+	$(hide) $< -m -M true -G -c $(POLICYVERS) $(PRIVATE_CIL_FILES) -o $@ -f /dev/null
 
 built_sepolicy := $(LOCAL_BUILT_MODULE)
 all_cil_files :=
@@ -539,16 +530,7 @@ $(LOCAL_BUILT_MODULE): $(sepolicy.recovery.conf) $(HOST_OUT_EXECUTABLES)/checkpo
                        $(HOST_OUT_EXECUTABLES)/sepolicy-analyze
 	@mkdir -p $(dir $@)
 	$(hide) $(CHECKPOLICY_ASAN_OPTIONS) $(HOST_OUT_EXECUTABLES)/checkpolicy -M -c \
-		$(POLICYVERS) -o $@.tmp $<
-	$(hide) $(HOST_OUT_EXECUTABLES)/sepolicy-analyze $@.tmp permissive > $@.permissivedomains
-	$(hide) if [ "$(TARGET_BUILD_VARIANT)" = "user" -a -s $@.permissivedomains ]; then \
-		echo "==========" 1>&2; \
-		echo "ERROR: permissive domains not allowed in user builds" 1>&2; \
-		echo "List of invalid domains:" 1>&2; \
-		cat $@.permissivedomains 1>&2; \
-		exit 1; \
-		fi
-	$(hide) mv $@.tmp $@
+		$(POLICYVERS) -o $@ $<
 
 sepolicy.recovery.conf :=
 
